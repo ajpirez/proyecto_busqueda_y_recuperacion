@@ -30,7 +30,6 @@ bun.lockb
 *.ndjson.tmp
 
 # bun cache
-S
 .bun-cache/
 
 poder_judicial_files/

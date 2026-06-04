@@ -1,13 +1,10 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import type {
-  RagResponse,
-  SearchFilters,
-  SearchMode,
-  SearchResponse,
-} from '@rag/shared';
-import { ragAnswer, search } from '@/lib/api';
+import { useMemo, useState } from 'react';
+import type { SearchMode } from '@rag/shared';
+import { useRagMutation } from '@/hooks/use-rag-mutation';
+import { useSearchQuery } from '@/hooks/use-search-query';
+import { EMPTY_FACETS, toFilters } from '@/lib/search-params';
 import { SearchBar } from '@/components/SearchBar';
 import {
   FacetSidebar,
@@ -17,22 +14,6 @@ import { ResultCard } from '@/components/ResultCard';
 import { RagAnswerPanel } from '@/components/RagAnswerPanel';
 import { Pagination } from '@/components/Pagination';
 
-const PAGE_SIZE = 10;
-
-const EMPTY_FACETS: SelectedFacets = {
-  tribunal: [],
-  year: [],
-  tipoRecurso: [],
-};
-
-function toFilters(selected: SelectedFacets): SearchFilters {
-  return {
-    tribunal: selected.tribunal.length ? selected.tribunal : undefined,
-    year: selected.year.length ? selected.year : undefined,
-    tipoRecurso: selected.tipoRecurso.length ? selected.tipoRecurso : undefined,
-  };
-}
-
 export default function HomePage() {
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
@@ -40,55 +21,34 @@ export default function HomePage() {
   const [selected, setSelected] = useState<SelectedFacets>(EMPTY_FACETS);
   const [page, setPage] = useState(1);
 
-  const [results, setResults] = useState<SearchResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useMemo(() => {
+    if (!submittedQuery.trim()) return null;
+    return { q: submittedQuery, mode, page, selected };
+  }, [submittedQuery, mode, page, selected]);
 
-  const [rag, setRag] = useState<RagResponse | null>(null);
-  const [ragLoading, setRagLoading] = useState(false);
+  const {
+    data: results,
+    isPending,
+    isFetching,
+    isError,
+    error,
+  } = useSearchQuery(searchParams);
 
-  const doSearch = useCallback(
-    async (params: {
-      q: string;
-      selected: SelectedFacets;
-      page: number;
-      mode: SearchMode;
-    }) => {
-      if (!params.q.trim()) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await search({
-          q: params.q,
-          filters: toFilters(params.selected),
-          page: params.page,
-          size: PAGE_SIZE,
-          mode: params.mode,
-        });
-        setResults(res);
-      } catch (err) {
-        setError((err as Error).message);
-        setResults(null);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const ragMutation = useRagMutation();
+
+  const searchLoading = isPending || isFetching;
+  const hasSubmitted = Boolean(submittedQuery.trim());
 
   const onSubmit = () => {
+    if (!query.trim()) return;
     setSubmittedQuery(query);
     setSelected(EMPTY_FACETS);
     setPage(1);
-    setRag(null);
-    doSearch({ q: query, selected: EMPTY_FACETS, page: 1, mode });
+    ragMutation.reset();
   };
 
   const onModeChange = (m: SearchMode) => {
     setMode(m);
-    if (submittedQuery) {
-      doSearch({ q: submittedQuery, selected, page, mode: m });
-    }
   };
 
   const onToggleFacet = (field: keyof SelectedFacets, value: string) => {
@@ -110,43 +70,41 @@ export default function HomePage() {
     }
     setSelected(next);
     setPage(1);
-    doSearch({ q: submittedQuery, selected: next, page: 1, mode });
+    ragMutation.reset();
   };
 
   const onClearFacets = () => {
     setSelected(EMPTY_FACETS);
     setPage(1);
-    doSearch({ q: submittedQuery, selected: EMPTY_FACETS, page: 1, mode });
+    ragMutation.reset();
   };
 
   const onPageChange = (p: number) => {
     setPage(p);
-    doSearch({ q: submittedQuery, selected, page: p, mode });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const onGenerateRag = async () => {
+  const onGenerateRag = () => {
     if (!submittedQuery.trim()) return;
-    setRagLoading(true);
-    try {
-      const res = await ragAnswer({
-        q: submittedQuery,
-        filters: toFilters(selected),
-        topK: 6,
-      });
-      setRag(res);
-    } catch (err) {
-      setRag({
+    ragMutation.mutate({
+      q: submittedQuery,
+      filters: toFilters(selected),
+      topK: 6,
+    });
+  };
+
+  const ragAnswer = ragMutation.isError
+    ? {
         query: submittedQuery,
-        answer: `Error al generar la respuesta: ${(err as Error).message}`,
+        answer: `Error al generar la respuesta: ${ragMutation.error.message}`,
         citations: [],
         model: '-',
         tookMs: 0,
-      });
-    } finally {
-      setRagLoading(false);
-    }
-  };
+      }
+    : ragMutation.data ?? null;
+
+  const showEmpty = !hasSubmitted && !searchLoading;
+  const showResults = hasSubmitted && (results || searchLoading);
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-8">
@@ -165,19 +123,19 @@ export default function HomePage() {
           value={query}
           onChange={setQuery}
           onSubmit={onSubmit}
-          loading={loading}
+          loading={searchLoading}
           mode={mode}
           onModeChange={onModeChange}
         />
       </div>
 
-      {error && (
+      {isError && (
         <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
+          {error.message}
         </div>
       )}
 
-      {!results && !loading && (
+      {showEmpty && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-slate-500">
             Escribe una consulta para buscar en la base de conocimiento.
@@ -188,7 +146,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {results && (
+      {showResults && results && (
         <div className="flex flex-col gap-6 lg:flex-row">
           <FacetSidebar
             facets={results.facets}
@@ -199,16 +157,17 @@ export default function HomePage() {
 
           <div className="min-w-0 flex-1 space-y-4">
             <RagAnswerPanel
-              loading={ragLoading}
-              answer={rag}
+              loading={ragMutation.isPending}
+              answer={ragAnswer}
               onGenerate={onGenerateRag}
-              hasQuery={Boolean(submittedQuery)}
+              hasQuery={hasSubmitted}
             />
 
             <div className="flex items-center justify-between text-sm text-slate-500">
               <span>
                 {results.total} resultado{results.total === 1 ? '' : 's'} ·{' '}
                 {results.tookMs} ms · modo {results.mode}
+                {isFetching && !isPending ? ' · actualizando…' : ''}
               </span>
             </div>
 
@@ -220,7 +179,7 @@ export default function HomePage() {
               />
             ))}
 
-            {results.hits.length === 0 && (
+            {results.hits.length === 0 && !searchLoading && (
               <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
                 No se encontraron resultados para «{results.query}».
               </div>
@@ -233,6 +192,12 @@ export default function HomePage() {
               onPageChange={onPageChange}
             />
           </div>
+        </div>
+      )}
+
+      {showResults && !results && searchLoading && (
+        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500">
+          Buscando…
         </div>
       )}
     </main>
