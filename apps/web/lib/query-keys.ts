@@ -8,10 +8,22 @@ export interface SearchQueryParams {
   selected: SelectedFacets;
 }
 
+/** Clave serializable (evita refetches por referencia de objeto). */
+export function searchQueryKey(params: SearchQueryParams) {
+  const { q, mode, page, selected } = params;
+  return [
+    'search',
+    q,
+    mode,
+    page,
+    [...selected.tribunal].sort().join(','),
+    [...selected.year].sort((a, b) => a - b).join(','),
+    [...selected.tipoRecurso].sort().join(','),
+  ] as const;
+}
+
 export const searchKeys = {
   all: ['search'] as const,
-  list: (params: SearchQueryParams) =>
-    [...searchKeys.all, params] as const,
 };
 
 export const ragKeys = {

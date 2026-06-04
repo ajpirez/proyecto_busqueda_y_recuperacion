@@ -28,7 +28,7 @@ export default function HomePage() {
 
   const {
     data: results,
-    isPending,
+    isLoading,
     isFetching,
     isError,
     error,
@@ -36,7 +36,9 @@ export default function HomePage() {
 
   const ragMutation = useRagMutation();
 
-  const searchLoading = isPending || isFetching;
+  /** Solo la primera carga (sin datos); refetch con keepPreviousData no bloquea el botón. */
+  const searchLoading = isLoading;
+  const isRefetching = isFetching && Boolean(results);
   const hasSubmitted = Boolean(submittedQuery.trim());
 
   const onSubmit = () => {
@@ -167,7 +169,7 @@ export default function HomePage() {
               <span>
                 {results.total} resultado{results.total === 1 ? '' : 's'} ·{' '}
                 {results.tookMs} ms · modo {results.mode}
-                {isFetching && !isPending ? ' · actualizando…' : ''}
+                {isRefetching ? ' · actualizando…' : ''}
               </span>
             </div>
 
