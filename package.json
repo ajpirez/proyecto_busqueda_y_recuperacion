@@ -1,0 +1,22 @@
+{
+  "name": "rag-judicial",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de busqueda y recuperacion (RAG) sobre documentos del Poder Judicial usando NestJS + Elasticsearch + Next.js + Ollama",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f elasticsearch",
+    "dev:api": "bun --cwd apps/api run start:dev",
+    "dev:web": "bun --cwd apps/web run dev",
+    "ingest": "bun --cwd apps/api run ingest",
+    "build": "bun --cwd packages/shared run build && bun --cwd apps/api run build && bun --cwd apps/web run build"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

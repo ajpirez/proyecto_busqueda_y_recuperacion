@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
+
+/* Resaltado de coincidencias devuelto por Elasticsearch (snippets). */
+.snippet em {
+  @apply not-italic font-semibold bg-yellow-100 text-slate-900 rounded px-0.5;
+}
