@@ -45,6 +45,7 @@ export class RagController {
     },
   })
   async answer(@Body() dto: RagRequestDto): Promise<RagResponse> {
+    console.log('dto', dto);
     return this.rag.answer({
       q: dto.q,
       filters: dto.filters,

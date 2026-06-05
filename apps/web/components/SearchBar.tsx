@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import type { SearchMode } from '@rag/shared';
+import type { SearchMode } from "@rag/shared";
 
 export interface SearchBarProps {
   value: string;
@@ -12,9 +12,9 @@ export interface SearchBarProps {
 }
 
 const MODES: { id: SearchMode; label: string; hint: string }[] = [
-  { id: 'hybrid', label: 'Híbrida', hint: 'BM25 + vectores' },
-  { id: 'semantic', label: 'Semántica', hint: 'Solo embeddings' },
-  { id: 'lexical', label: 'Léxica', hint: 'Solo texto (BM25)' },
+  { id: "hybrid", label: "Híbrida", hint: "BM25 + vectores" },
+  { id: "semantic", label: "Semántica", hint: "Solo embeddings" },
+  { id: "lexical", label: "Léxica", hint: "Solo texto (BM25)" },
 ];
 
 export function SearchBar({
@@ -55,10 +55,10 @@ export function SearchBar({
         </div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !value.trim()}
           className="h-12 rounded-xl bg-brand-600 px-6 font-medium text-white shadow-sm transition hover:bg-brand-700 disabled:opacity-60"
         >
-          {loading ? 'Buscando…' : 'Buscar'}
+          {loading ? "Buscando…" : "Buscar"}
         </button>
       </form>
 
@@ -74,8 +74,8 @@ export function SearchBar({
             title={m.hint}
             className={`rounded-full border px-3 py-1 text-sm transition ${
               mode === m.id
-                ? 'border-brand-500 bg-brand-50 text-brand-700'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                ? "border-brand-500 bg-brand-50 text-brand-700"
+                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
             }`}
           >
             {m.label}

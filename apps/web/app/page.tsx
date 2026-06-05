@@ -115,8 +115,8 @@ export default function HomePage() {
           Búsqueda Jurídica
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Recuperación de información sobre sentencias del Poder Judicial ·
-          búsqueda híbrida (BM25 + embeddings) con respuestas asistidas por IA.
+          Recuperación de información sobre sentencias del Poder Judicial {/* · */}
+          {/* búsqueda híbrida (BM25 + embeddings) con respuestas asistidas por IA. */}
         </p>
       </header>
 
