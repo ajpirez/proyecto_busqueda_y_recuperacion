@@ -92,8 +92,6 @@ curl -X POST http://localhost:3001/api/search -H "Content-Type: application/json
   -d '{"q":"requisitos para reconocer la condición de refugiado","mode":"hybrid","size":5}'
 ```
 
-## Figma · Code Connect
-
 Archivo del proyecto: [Busqueda Juridica - Poder Judicial](https://www.figma.com/design/IuZOAPIpBQh4DFxriHryhG) (`fileKey`: `IuZOAPIpBQh4DFxriHryhG`, frame `1:2`)
 
 > Abrir con la misma cuenta de Figma conectada al MCP (`alejandro.pirez@usach.cl` → **Drafts**). Para el team gmail, reconecta el MCP en Cursor y vuelve a pedir la creación.
