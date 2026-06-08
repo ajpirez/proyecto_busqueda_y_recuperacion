@@ -15,7 +15,7 @@ parsean, segmentan, vectorizan (embeddings) e indexan en **Elasticsearch** para 
 proyecto final/
 ├─ apps/
 │  ├─ api/        NestJS  (ingesta, búsqueda híbrida, RAG)
-│  └─ web/        Next.js (interfaz de búsqueda + Code Connect de Figma)
+│  └─ web/        Next.js (interfaz de búsqueda)
 ├─ packages/
 │  └─ shared/     Tipos TypeScript compartidos (contrato de la API)
 ├─ poder_judicial_files/   Base de conocimiento (PDFs)
@@ -92,33 +92,6 @@ curl -X POST http://localhost:3001/api/search -H "Content-Type: application/json
   -d '{"q":"requisitos para reconocer la condición de refugiado","mode":"hybrid","size":5}'
 ```
 
-Archivo del proyecto: [Busqueda Juridica - Poder Judicial](https://www.figma.com/design/IuZOAPIpBQh4DFxriHryhG) (`fileKey`: `IuZOAPIpBQh4DFxriHryhG`, frame `1:2`)
-
-> Abrir con la misma cuenta de Figma conectada al MCP (`alejandro.pirez@usach.cl` → **Drafts**). Para el team gmail, reconecta el MCP en Cursor y vuelve a pedir la creación.
-
-### Dibujar la UI en Figma (sin MCP)
-
-El plan **Starter** agota rápido la cuota del MCP de Figma en Cursor. Usa el plugin local incluido en el repo:
-
-1. Abre el archivo en **Figma Desktop** (no solo el navegador).
-2. Menú **Plugins → Development → Import plugin from manifest…**
-3. Selecciona la carpeta [`apps/web/figma-plugin`](./apps/web/figma-plugin) (`manifest.json` + `code.js`).
-4. **Plugins → Development → Build Busqueda Juridica UI** → Run.
-
-Se crea el frame **Busqueda Juridica - Desktop** con SearchBar, filtros, panel RAG, tarjetas y paginación. Convierte cada sección en **componente** (clic derecho → Create component) para Code Connect.
-
-### Code Connect
-
-- Configuración: [`apps/web/figma.config.json`](./apps/web/figma.config.json)
-- Mapeos: `apps/web/components/*.figma.tsx` (`SearchBar`, `FacetSidebar`, `ResultCard`, `RagAnswerPanel`)
-
-Para activarlo:
-
-1. Copia la URL de cada componente publicado (con `?node-id=`).
-2. Reemplaza `FIGMA_URL` en cada `*.figma.tsx`.
-3. Publica: `bun --cwd apps/web run figma:connect`.
-
-> Nota: Code Connect requiere un plan **Organization/Enterprise** de Figma para aparecer en Dev Mode.
 
 ## Notas técnicas
 
