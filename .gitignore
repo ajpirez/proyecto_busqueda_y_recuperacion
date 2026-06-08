@@ -33,3 +33,7 @@ bun.lockb
 .bun-cache/
 
 poder_judicial_files/
+
+figma-plugin/
+
+.cursor

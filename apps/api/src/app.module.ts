@@ -6,6 +6,7 @@ import { OllamaModule } from './ollama/ollama.module';
 import { IngestionModule } from './ingestion/ingestion.module';
 import { SearchModule } from './search/search.module';
 import { RagModule } from './rag/rag.module';
+import { DocumentsModule } from './documents/documents.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -20,6 +21,7 @@ import { HealthController } from './health.controller';
     IngestionModule,
     SearchModule,
     RagModule,
+    DocumentsModule,
   ],
   controllers: [HealthController],
 })

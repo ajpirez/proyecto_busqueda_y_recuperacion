@@ -1,6 +1,7 @@
 'use client';
 
 import type { SearchHit } from '@rag/shared';
+import { getDocumentUrl } from '@/lib/documents';
 
 export interface ResultCardProps {
   hit: SearchHit;
@@ -19,9 +20,15 @@ export function ResultCard({ hit, rank }: ResultCardProps) {
         <span className="rounded-md bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700">
           {hit.tribunal}
         </span>
-        <span className="text-sm font-medium text-slate-700">
+        <a
+          href={getDocumentUrl(hit.sourceFile, hit.page)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Abrir ${hit.sourceFile}${hit.page ? ` (pág. ${hit.page})` : ''}`}
+          className="text-sm font-medium text-brand-600 hover:text-brand-700 hover:underline"
+        >
           Causa {hit.caseNumber}-{hit.year}
-        </span>
+        </a>
         {hit.tipoRecurso && (
           <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
             {hit.tipoRecurso}
