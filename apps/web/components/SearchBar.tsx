@@ -1,6 +1,7 @@
 "use client";
 
 import type { SearchMode } from "@rag/shared";
+import { getSearchModeConfig, SEARCH_MODES } from "@/lib/search-modes";
 
 export interface SearchBarProps {
   value: string;
@@ -10,12 +11,6 @@ export interface SearchBarProps {
   mode: SearchMode;
   onModeChange: (mode: SearchMode) => void;
 }
-
-const MODES: { id: SearchMode; label: string; hint: string }[] = [
-  { id: "hybrid", label: "Híbrida", hint: "BM25 + vectores" },
-  { id: "semantic", label: "Semántica", hint: "Solo embeddings" },
-  { id: "lexical", label: "Léxica", hint: "Solo texto (BM25)" },
-];
 
 export function SearchBar({
   value,
@@ -62,25 +57,30 @@ export function SearchBar({
         </button>
       </form>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
-          Modo
-        </span>
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            onClick={() => onModeChange(m.id)}
-            title={m.hint}
-            className={`rounded-full border px-3 py-1 text-sm transition ${
-              mode === m.id
-                ? "border-brand-500 bg-brand-50 text-brand-700"
-                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-            }`}
-          >
-            {m.label}
-          </button>
-        ))}
+      <div className="mt-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+            Tipo de búsqueda
+          </span>
+          {SEARCH_MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => onModeChange(m.id)}
+              title={m.hint}
+              className={`rounded-full border px-3 py-1 text-sm transition ${
+                mode === m.id
+                  ? "border-brand-500 bg-brand-50 text-brand-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {getSearchModeConfig(mode).hint}
+        </p>
       </div>
     </div>
   );

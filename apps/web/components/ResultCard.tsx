@@ -53,12 +53,6 @@ export function ResultCard({ hit, rank }: ResultCardProps) {
           />
         ))}
       </div>
-
-      <div className="mt-3 flex items-center gap-3 text-xs text-slate-400">
-        {hit.date && <span>Fecha: {hit.date}</span>}
-        {hit.page && <span>Pág. {hit.page}</span>}
-        <span className="truncate">{hit.sourceFile}</span>
-      </div>
     </article>
   );
 }

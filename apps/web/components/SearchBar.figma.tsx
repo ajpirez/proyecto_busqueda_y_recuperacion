@@ -1,4 +1,5 @@
 import figma from '@figma/code-connect';
+import { SEARCH_MODES } from '@/lib/search-modes';
 import { SearchBar } from './SearchBar';
 
 /**
@@ -14,11 +15,10 @@ const FIGMA_URL = 'https://www.figma.com/design/REEMPLAZAR_FILE_KEY/Busqueda-Jur
 figma.connect(SearchBar, FIGMA_URL, {
   props: {
     value: figma.string('Placeholder'),
-    mode: figma.enum('Modo', {
-      Híbrida: 'hybrid',
-      Semántica: 'semantic',
-      Léxica: 'lexical',
-    }),
+    mode: figma.enum(
+      'Modo',
+      Object.fromEntries(SEARCH_MODES.map((m) => [m.label, m.id])),
+    ),
     loading: figma.boolean('Cargando'),
   },
   example: (props) => (

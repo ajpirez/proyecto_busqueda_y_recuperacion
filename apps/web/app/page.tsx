@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import type { SearchMode } from '@rag/shared';
 import { useRagMutation } from '@/hooks/use-rag-mutation';
 import { useSearchQuery } from '@/hooks/use-search-query';
+import { getSearchModeLabel } from '@/lib/search-modes';
 import { EMPTY_FACETS, toFilters } from '@/lib/search-params';
 import { SearchBar } from '@/components/SearchBar';
 import {
@@ -168,7 +169,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between text-sm text-slate-500">
               <span>
                 {results.total} resultado{results.total === 1 ? '' : 's'} ·{' '}
-                {results.tookMs} ms · modo {results.mode}
+                {results.tookMs} ms · {getSearchModeLabel(results.mode)}
                 {isRefetching ? ' · actualizando…' : ''}
               </span>
             </div>
